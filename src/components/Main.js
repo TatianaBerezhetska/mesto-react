@@ -3,7 +3,7 @@ import addButton from '../images/Addbutton.svg';
 import Card from './Card.js';
 import api from './utils/Api.js';
 
-function Main({onEditProfile, onAddPlace, onEditAvatar}) {
+function Main({onEditProfile, onAddPlace, onEditAvatar, onCardClick}) {
   const [userName, setUserName] = React.useState();
   const [userDescription , setUserDescription ] = React.useState();
   const [userAvatar, setUserAvatar] = React.useState();
@@ -50,6 +50,7 @@ function Main({onEditProfile, onAddPlace, onEditAvatar}) {
         <Card 
         key={card._id}
         card={card}
+        handleClick={onCardClick}
         />
       )
       })}

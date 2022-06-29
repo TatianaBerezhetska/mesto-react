@@ -1,10 +1,14 @@
 import React from 'react';
 
-function Card({card}) {
+function Card({card, handleClick}) {
+
+  function handleCardClick() {
+    handleClick(card);
+  }
   
   return(
     <article className="element">
-      <img className="element__photo" src={card.link} alt={card.name} />
+      <img className="element__photo" src={card.link} alt={card.name} onClick={handleCardClick} />
       <div className="element__caption">
         <h2 className="element__description">{card.name}</h2>
         <div className="element__like">
