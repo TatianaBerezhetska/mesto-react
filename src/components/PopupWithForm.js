@@ -1,6 +1,6 @@
 import React from 'react';
 
-function PopupWithForm({name, title, buttonText, children, isOpen, onClose}) {
+function ImagePopup({name, title, buttonText, children, isOpen, onClose}) {
   return(
     <div className={`popup popup_type_${name} ${isOpen ? 'popup_opened' : ''}`}>
     <div className="popup__container">
@@ -15,4 +15,4 @@ function PopupWithForm({name, title, buttonText, children, isOpen, onClose}) {
   );
 }
 
-export default PopupWithForm;
+export default ImagePopup;
