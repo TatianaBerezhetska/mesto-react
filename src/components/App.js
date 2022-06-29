@@ -4,7 +4,7 @@ import Header from './Header.js';
 import Main from './Main.js';
 import Footer from './Footer.js';
 import PopupWithForm from './PopupWithForm.js';
-import PopupWithImage from './PopupWithImage.js';
+import ImagePopup from './ImagePopup.js';
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
@@ -92,7 +92,7 @@ function App() {
         buttonText="Да"
       />
        
-      <PopupWithImage 
+      <ImagePopup 
       isOpen={isImagePopupOpen}
       onClose={closeAllPopups}
       selectedCard={selectedCard}
