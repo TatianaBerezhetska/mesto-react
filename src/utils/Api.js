@@ -5,16 +5,23 @@ class Api {
     this.headers = headers;
   }
 
+  _checkResponse(res) {
+    if (res.ok) {
+      return Promise.resolve(res.json());
+    }
+    return Promise.reject(res.status);
+  }
+
   getUserInfo() {
     return fetch(this.userUrl, {
       headers: this.headers,
-    }).then(checkResponse);
+    }).then(this._checkResponse);
   }
 
   getCards() {
     return fetch(this.url, {
       headers: this.headers,
-    }).then(checkResponse);
+    }).then(this._checkResponse);
   }
 
   getAllData() {
@@ -29,7 +36,7 @@ class Api {
         name: data.username,
         about: data.job,
       }),
-    }).then(checkResponse);
+    }).then(this._checkResponse);
   }
 
   updateUserAvatar(res) {
@@ -39,7 +46,7 @@ class Api {
       body: JSON.stringify({
         avatar: res.avatar,
       }),
-    }).then(checkResponse);
+    }).then(this._checkResponse);
   }
 
   postNewCard(newCard) {
@@ -50,7 +57,7 @@ class Api {
         name: newCard.name,
         link: newCard.link,
       }),
-    }).then(checkResponse);
+    }).then(this._checkResponse);
   }
 
   deleteCard(cardId) {
@@ -60,7 +67,7 @@ class Api {
       body: JSON.stringify({
         _id: cardId,
       }),
-    }).then(checkResponse);
+    }).then(this._checkResponse);
   }
 
   likeCard(cardId) {
@@ -70,7 +77,7 @@ class Api {
       body: JSON.stringify({
         _id: cardId,
       }),
-    }).then(checkResponse);
+    }).then(this._checkResponse);
   }
 
   dislikeCard(cardId) {
@@ -80,7 +87,7 @@ class Api {
       body: JSON.stringify({
         _id: cardId,
       }),
-    }).then(checkResponse);
+    }).then(this._checkResponse);
   }
 }
 
@@ -92,12 +99,5 @@ const api = new Api({
     "Content-Type": "application/json",
   },
 });
-
-function checkResponse(res) {
-  if (res.ok) {
-    return Promise.resolve(res.json());
-  }
-  return Promise.reject(res.status);
-}
 
 export default api;
