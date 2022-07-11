@@ -28,24 +28,22 @@ class Api {
     return Promise.all([this.getUserInfo(), this.getCards()]);
   }
 
-  updateUserInfo(data) {
+  setUserInfo(data) {
     return fetch(this.userUrl, {
       method: "PATCH",
       headers: this.headers,
       body: JSON.stringify({
-        name: data.username,
-        about: data.job,
+        name: data.name,
+        about: data.about,
       }),
     }).then(this._checkResponse);
   }
 
-  updateUserAvatar(res) {
+  setUserAvatar(newAvatar) {
     return fetch(`${this.userUrl}/avatar`, {
       method: "PATCH",
       headers: this.headers,
-      body: JSON.stringify({
-        avatar: res.avatar,
-      }),
+      body: JSON.stringify(newAvatar),
     }).then(this._checkResponse);
   }
 
@@ -70,19 +68,9 @@ class Api {
     }).then(this._checkResponse);
   }
 
-  likeCard(cardId) {
+  changeLikeCardStatus(cardId, isLiked) {
     return fetch(`${this.url}/${cardId}/likes`, {
-      method: "PUT",
-      headers: this.headers,
-      body: JSON.stringify({
-        _id: cardId,
-      }),
-    }).then(this._checkResponse);
-  }
-
-  dislikeCard(cardId) {
-    return fetch(`${this.url}/${cardId}/likes`, {
-      method: "DELETE",
+      method: `${isLiked ? "PUT" : "DELETE"}`,
       headers: this.headers,
       body: JSON.stringify({
         _id: cardId,
