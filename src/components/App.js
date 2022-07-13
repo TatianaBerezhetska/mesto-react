@@ -61,7 +61,10 @@ function App() {
       setCards((cards) => {
         return cards.filter((item) => item._id !== card._id);
       });
-    });
+    })
+    .catch((err) => {
+      console.log(`Ошибка удаления карточки ${err}`);
+    })
   }
 
   const handleEditProfileClick = () => {
