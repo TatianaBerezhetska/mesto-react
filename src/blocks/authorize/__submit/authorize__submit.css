@@ -9,3 +9,8 @@
   margin: 216px auto 0;
   padding: 0;
 }
+
+.authorize__submit:hover {
+  cursor: pointer;
+  opacity: 0.8;
+}

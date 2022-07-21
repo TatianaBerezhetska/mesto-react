@@ -1,15 +1,38 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useHistory } from "react-router-dom";
+import * as auth from "./Auth.js";
 
 function Register() {
+  const history = useHistory();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  function handleEmailChange(e) {
+    console.log('change');
+    setEmail(e.target.value);
+  }
+
+  function handlePasswordChange(e) {
+    setPassword(e.target.value);
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    console.log('submit')
+    auth.register(email, password)
+    .then(() => {
+      history.push('/sign-in');
+    })
+  };
+
   return (
     <>
     <div className="authorize">
       <h1 className="authorize__header">Регистрация</h1>
-      <form className="authorize__form">
-        <input className="authorize__input" type="type" placeholder="Email" name="email"></input>
-        <input className="authorize__input" type="password" placeholder="Пароль" name="password"></input>
-        <button className="authorize__submit">Зарегистрироваться</button>
+      <form className="authorize__form" onSubmit={handleSubmit}>
+        <input className="authorize__input" onChange={handleEmailChange} type="type" placeholder="Email" name="email"></input>
+        <input className="authorize__input" onChange={handlePasswordChange} type="password" placeholder="Пароль" name="password"></input>
+        <button className="authorize__submit" type="submit">Зарегистрироваться</button>
       </form>
       <div className="authorize__redirect">
       <p>Уже зарегистрированы?</p>
