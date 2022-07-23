@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Route, Switch, Redirect } from "react-router-dom";
+import { Route, Switch, Redirect, useHistory } from "react-router-dom";
 import "../index.css";
 import Header from "./Header.js";
 import Main from "./Main.js";
@@ -13,8 +13,11 @@ import EditAvatarPopup from "./EditAvatarPopup.js";
 import AddPlacePopup from "./AddPlacePopup.js";
 import ImagePopup from "./ImagePopup.js";
 import api from "../utils/Api";
+import * as auth from "./Auth.js";
 import { CurrentUserContext } from "./contexts/CurrentUserContext.js";
 import InfoTooltip from "./InfoTooltip";
+import successIcon from "../images/Success.svg";
+import failureIcon from "../images/Failure.svg";
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
@@ -27,6 +30,11 @@ function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
   const [loggedIn, setLoggedIn] = useState(false);
+
+  const [infoToolTitle, setInfoToolTitle] = useState('');
+  const [infoToolImg, setInfoToolImg] = useState({});
+  
+  // const history = useHistory();
 
   useEffect(() => {
     api
@@ -75,6 +83,31 @@ function App() {
       .catch((err) => {
         console.log(`Ошибка удаления карточки ${err}`);
       });
+  }
+
+  const handleRegisterUser = (email, password) => {
+    auth.register(email, password)
+    .then((res) => {
+      if(res.status === 200 || 201) {
+        setInfoToolTitle('Вы успешно зарегистрировались!');
+        setInfoToolImg(successIcon);
+        setIsInfoTooltipOpen(true);
+        //если здесь, то не успевает показаться окно подтверждения
+      } else {
+        setInfoToolTitle('Что-то пошло не так! Попробуйте ещё раз.');
+        setInfoToolImg(failureIcon);
+        setIsInfoTooltipOpen(true);
+      }
+    })
+    //если здесь, то не происходит редиректа
+    // .then((res) => {
+    //   if(res.status === 200 || 201) {
+    //     history.push('/sign-in');
+    //   }
+    // })
+    .catch((err)=>{
+      console.log(err)
+    })
   }
 
   const handleEditProfileClick = () => {
@@ -133,6 +166,7 @@ function App() {
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
     setIsImagePopupOpen(false);
+    setIsInfoTooltipOpen(false);
   };
 
   return (
@@ -141,11 +175,11 @@ function App() {
           <Header />
           <Switch>
           <Route exact path="/">
-            {loggedIn ? <Redirect to="/feed" /> : <Redirect to="/sign-in" />}
+            {!loggedIn && <Redirect to="/sign-in" />}
           </Route>
 
           <ProtectedRoute
-            path="/feed"
+            exact path="/"
             loggedIn={loggedIn}
             component={Main}
             onEditProfile={handleEditProfileClick}
@@ -158,8 +192,12 @@ function App() {
           />
 
           <Route path="/sign-up">
-            <Register />
+            <Register 
+              onRegisterUser={handleRegisterUser}
+            />
             <InfoTooltip 
+              title={infoToolTitle}
+              image={infoToolImg}
               isOpen={isInfoTooltipOpen}
               onClose={closeAllPopups}
             />

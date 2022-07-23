@@ -2,13 +2,11 @@ import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import * as auth from "./Auth.js";
 
-function Register() {
-  const history = useHistory();
+function Register({onRegisterUser}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  
   function handleEmailChange(e) {
-    console.log('change');
     setEmail(e.target.value);
   }
 
@@ -18,11 +16,7 @@ function Register() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    console.log('submit')
-    auth.register(email, password)
-    .then(() => {
-      history.push('/sign-in');
-    })
+    onRegisterUser(email, password);
   };
 
   return (
@@ -38,7 +32,6 @@ function Register() {
       <p>Уже зарегистрированы?</p>
       <Link className="authorize__link" to="/sign-in"> Войти</Link>
       </div>
-      
     </div>
     
     </>
