@@ -30,11 +30,12 @@ function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState("email@email.ru");
 
-  const [infoToolTitle, setInfoToolTitle] = useState('');
+  const [infoToolTitle, setInfoToolTitle] = useState("");
   const [infoToolImg, setInfoToolImg] = useState({});
-  
-  // const history = useHistory();
+
+  const history = useHistory();
 
   useEffect(() => {
     api
@@ -86,28 +87,56 @@ function App() {
   }
 
   const handleRegisterUser = (email, password) => {
-    auth.register(email, password)
-    .then((res) => {
-      if(res.status === 200 || 201) {
-        setInfoToolTitle('Вы успешно зарегистрировались!');
-        setInfoToolImg(successIcon);
-        setIsInfoTooltipOpen(true);
-        //если здесь, то не успевает показаться окно подтверждения
-      } else {
-        setInfoToolTitle('Что-то пошло не так! Попробуйте ещё раз.');
-        setInfoToolImg(failureIcon);
-        setIsInfoTooltipOpen(true);
+    auth
+      .register(email, password)
+      .then((res) => {
+        if (res.ok) {
+          setInfoToolTitle("Вы успешно зарегистрировались!");
+          setInfoToolImg(successIcon);
+          setIsInfoTooltipOpen(true);
+          setTimeout(() => {
+            history.push("/sign-in");
+          }, "3000");
+        } else {
+          setInfoToolTitle("Что-то пошло не так! Попробуйте ещё раз.");
+          setInfoToolImg(failureIcon);
+          setIsInfoTooltipOpen(true);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleLogin = (email, password) => {
+    auth
+      .authorize(email, password)
+      .then((res) => {
+        if (res.token) {
+          setLoggedIn(true);
+          history.push("/feed");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  function componentDidMount() {
+    tokenCheck();
+  }
+
+  function tokenCheck() {
+    if (localStorage.getItem("token")) {
+      const token = localStorage.getItem("token");
+      if (token) {
+        auth.getContent(token).then((res) => {
+          setUserEmail(res.data.email);
+          setLoggedIn(true);
+          history.push("/feed");
+        });
       }
-    })
-    //если здесь, то не происходит редиректа
-    // .then((res) => {
-    //   if(res.status === 200 || 201) {
-    //     history.push('/sign-in');
-    //   }
-    // })
-    .catch((err)=>{
-      console.log(err)
-    })
+    }
   }
 
   const handleEditProfileClick = () => {
@@ -169,17 +198,20 @@ function App() {
     setIsInfoTooltipOpen(false);
   };
 
+  componentDidMount();
+
   return (
-      <CurrentUserContext.Provider value={currentUser}>
-        <div>
-          <Header />
-          <Switch>
+    <CurrentUserContext.Provider value={currentUser}>
+      <div>
+        <Header email={userEmail} />
+        <Switch>
           <Route exact path="/">
             {!loggedIn && <Redirect to="/sign-in" />}
           </Route>
 
           <ProtectedRoute
-            exact path="/"
+            exact
+            path="/feed"
             loggedIn={loggedIn}
             component={Main}
             onEditProfile={handleEditProfileClick}
@@ -192,10 +224,8 @@ function App() {
           />
 
           <Route path="/sign-up">
-            <Register 
-              onRegisterUser={handleRegisterUser}
-            />
-            <InfoTooltip 
+            <Register onRegisterUser={handleRegisterUser} />
+            <InfoTooltip
               title={infoToolTitle}
               image={infoToolImg}
               isOpen={isInfoTooltipOpen}
@@ -203,43 +233,43 @@ function App() {
             />
           </Route>
           <Route path="/sign-in">
-            <Login />
+            <Login onLogin={handleLogin} />
           </Route>
-          </Switch>
+        </Switch>
 
-          <Footer />
+        <Footer />
 
-          <EditProfilePopup
-            isOpen={isEditProfilePopupOpen}
-            onClose={closeAllPopups}
-            onUpdateUser={handleUpdateUser}
-          ></EditProfilePopup>
+        <EditProfilePopup
+          isOpen={isEditProfilePopupOpen}
+          onClose={closeAllPopups}
+          onUpdateUser={handleUpdateUser}
+        ></EditProfilePopup>
 
-          <EditAvatarPopup
-            isOpen={isEditAvatarPopupOpen}
-            onClose={closeAllPopups}
-            onUpdateAvatar={handleUpdateAvatar}
-          ></EditAvatarPopup>
+        <EditAvatarPopup
+          isOpen={isEditAvatarPopupOpen}
+          onClose={closeAllPopups}
+          onUpdateAvatar={handleUpdateAvatar}
+        ></EditAvatarPopup>
 
-          <AddPlacePopup
-            isOpen={isAddPlacePopupOpen}
-            onClose={closeAllPopups}
-            onAddPlace={handleAddPlace}
-          ></AddPlacePopup>
+        <AddPlacePopup
+          isOpen={isAddPlacePopupOpen}
+          onClose={closeAllPopups}
+          onAddPlace={handleAddPlace}
+        ></AddPlacePopup>
 
-          <PopupWithForm
-            name="submit-action"
-            title="Вы уверены?"
-            buttonText="Да"
-          />
+        <PopupWithForm
+          name="submit-action"
+          title="Вы уверены?"
+          buttonText="Да"
+        />
 
-          <ImagePopup
-            isOpen={isImagePopupOpen}
-            onClose={closeAllPopups}
-            selectedCard={selectedCard}
-          />
-        </div>
-      </CurrentUserContext.Provider>
+        <ImagePopup
+          isOpen={isImagePopupOpen}
+          onClose={closeAllPopups}
+          selectedCard={selectedCard}
+        />
+      </div>
+    </CurrentUserContext.Provider>
   );
 }
 

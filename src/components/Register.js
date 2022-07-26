@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
-import * as auth from "./Auth.js";
+import { Link } from "react-router-dom";
 
 function Register({onRegisterUser}) {
   const [email, setEmail] = useState('');
